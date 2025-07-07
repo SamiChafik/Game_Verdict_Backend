@@ -14,7 +14,7 @@ public class FavoriteGame {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Long userId;
-    private Long gameId;
+//    private Long gameId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
@@ -40,13 +40,13 @@ public class FavoriteGame {
         this.userId = userId;
     }
 
-    public Long getGameId() {
-        return gameId;
-    }
-
-    public void setGameId(Long gameId) {
-        this.gameId = gameId;
-    }
+//    public Long getGameId() {
+//        return gameId;
+//    }
+//
+//    public void setGameId(Long gameId) {
+//        this.gameId = gameId;
+//    }
 
     public Member getMember() {
         return member;
