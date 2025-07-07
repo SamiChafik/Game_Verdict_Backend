@@ -4,7 +4,7 @@ import com.example.game_verdict.services.UserService;
 import com.example.game_verdict.dtos.UserDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
+//import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -38,7 +38,7 @@ public class UserController {
     }
 
 //    @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping("/updateRole/{id}")
+    @PutMapping("/role/{id}")
     public UserDTO updateUserRole(@RequestBody UserDTO dto, @PathVariable Long id){
         return service.updateUserRole(id,dto);
     }
