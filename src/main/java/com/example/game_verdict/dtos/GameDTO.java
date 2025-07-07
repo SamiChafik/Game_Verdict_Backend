@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -20,8 +21,8 @@ public class GameDTO {
     private Rating rating;
     private Float averageRating;
     private Long rawgId;
-    private Set<String> platforms;
-    private Set<String> genres;
+    private List<PlatformDTO> platforms;
+    private List<GenreDTO> genres;
     private int reviewCount;
 
     public Long getId() {
@@ -88,19 +89,19 @@ public class GameDTO {
         this.rawgId = rawgId;
     }
 
-    public Set<String> getPlatforms() {
+    public List<PlatformDTO> getPlatforms() {
         return platforms;
     }
 
-    public void setPlatforms(Set<String> platforms) {
+    public void setPlatforms(List<PlatformDTO> platforms) {
         this.platforms = platforms;
     }
 
-    public Set<String> getGenres() {
+    public List<GenreDTO> getGenres() {
         return genres;
     }
 
-    public void setGenres(Set<String> genres) {
+    public void setGenres(List<GenreDTO> genres) {
         this.genres = genres;
     }
 
