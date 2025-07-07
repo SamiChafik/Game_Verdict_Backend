@@ -5,7 +5,7 @@ import com.example.game_verdict.entities.Role;
 import com.example.game_verdict.entities.User;
 import com.example.game_verdict.mappers.UserMapper;
 import com.example.game_verdict.repositories.UserRepository;
-import org.springframework.security.crypto.password.PasswordEncoder;
+//import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -15,12 +15,12 @@ import java.util.List;
 public class UserService {
     private final UserMapper mapper;
     private final UserRepository repository;
-    private final PasswordEncoder passwordEncoder;
+//    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserMapper mapper, UserRepository repository, PasswordEncoder passwordEncoder) {
+    public UserService(UserMapper mapper, UserRepository repository) {
         this.mapper = mapper;
         this.repository = repository;
-        this.passwordEncoder = passwordEncoder;
+//        this.passwordEncoder = passwordEncoder;
     }
 
     public UserDTO createUser(UserDTO userDTO) {
@@ -39,7 +39,8 @@ public class UserService {
         User user = new User();
         user.setName(userDTO.getName());
         user.setEmail(userDTO.getEmail());
-        user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+//        user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+        user.setPassword(userDTO.getPassword());
         user.setAvatar(userDTO.getAvatar());
         user.setBio(userDTO.getBio());
         user.setCreatedAt(LocalDate.now());
@@ -61,7 +62,8 @@ public class UserService {
         user.setEmail(dto.getEmail());
         user.setBio(dto.getBio());
         user.setAvatar(dto.getAvatar());
-        user.setPassword(passwordEncoder.encode(dto.getPassword()));
+//        user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        user.setPassword(dto.getPassword());
         User savedUser = repository.save(user);
         return mapper.toDTO(savedUser);
     }
