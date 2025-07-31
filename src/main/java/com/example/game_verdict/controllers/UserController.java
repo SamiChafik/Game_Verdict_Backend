@@ -19,11 +19,11 @@ public class UserController {
         this.service = service;
     }
 
-    @PostMapping
-    public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO userDTO) {
-        UserDTO createdUser = service.createUser(userDTO);
-        return ResponseEntity.ok(createdUser);
-    }
+//    @PostMapping
+//    public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO userDTO) {
+//        UserDTO createdUser = service.createUser(userDTO);
+//        return ResponseEntity.ok(createdUser);
+//    }
 
 //    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/userList")
