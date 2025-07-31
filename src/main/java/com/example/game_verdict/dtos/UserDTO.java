@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -16,8 +17,8 @@ public class UserDTO {
     private String password;
     private String avatar;
     private String bio;
-    private LocalDate createdAt;
-    private LocalDate lastLogin;
+    private LocalDateTime createdAt;
+    private LocalDateTime lastLogin;
     private Role role;
     private boolean isBanned;
 
@@ -69,19 +70,19 @@ public class UserDTO {
         this.bio = bio;
     }
 
-    public LocalDate getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDate createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
-    public LocalDate getLastLogin() {
+    public LocalDateTime getLastLogin() {
         return lastLogin;
     }
 
-    public void setLastLogin(LocalDate lastLogin) {
+    public void setLastLogin(LocalDateTime lastLogin) {
         this.lastLogin = lastLogin;
     }
 

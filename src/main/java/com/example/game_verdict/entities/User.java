@@ -8,7 +8,9 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -24,8 +26,10 @@ public class User implements UserDetails {
     private String password;
     private String avatar;
     private String bio;
-    private LocalDate createdAt;
-    private LocalDate lastLogin;
+
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
+    private LocalDateTime lastLogin;
     private Role role;
     private boolean isBanned;
 
@@ -107,19 +111,20 @@ public class User implements UserDetails {
         this.bio = bio;
     }
 
-    public LocalDate getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDate createdAt) {
-        this.createdAt = createdAt;
+    @PrePersist
+    public void setCreatedAt() {
+        this.createdAt = LocalDateTime.now();
     }
 
-    public LocalDate getLastLogin() {
+    public LocalDateTime getLastLogin() {
         return lastLogin;
     }
 
-    public void setLastLogin(LocalDate lastLogin) {
+    public void setLastLogin(LocalDateTime lastLogin) {
         this.lastLogin = lastLogin;
     }
 

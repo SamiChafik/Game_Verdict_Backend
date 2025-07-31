@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @AllArgsConstructor
@@ -15,7 +17,8 @@ public class AuthenticationResponse {
     private String name;
     private String email;
     private String role;
-    private Date date;
+    private LocalDateTime creationDate;
+    private LocalDateTime lastLogin;
 
     public String getToken() {
         return token;
@@ -57,11 +60,19 @@ public class AuthenticationResponse {
         this.role = role;
     }
 
-    public Date getDate() {
-        return date;
+    public LocalDateTime getCreationDate() {
+        return creationDate;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setCreationDate(LocalDateTime creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public LocalDateTime getLastLogin() {
+        return lastLogin;
+    }
+
+    public void setLastLogin(LocalDateTime lastLogin) {
+        this.lastLogin = lastLogin;
     }
 }

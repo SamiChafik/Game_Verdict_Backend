@@ -9,6 +9,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 import static com.example.game_verdict.entities.Role.*;
 
 @Service
@@ -53,7 +55,7 @@ public class AuthenticationService {
         response.setName(user.getName());
         response.setEmail(user.getEmail());
         response.setRole(user.getRole().name());
-//        response.setDate(user.getDateInscription());
+        response.setCreationDate(user.getCreatedAt());
         return response;
     }
 
@@ -75,7 +77,11 @@ public class AuthenticationService {
         response.setName(user.getName());
         response.setEmail(user.getEmail());
         response.setRole(user.getRole().name());
-//        response.setDate(user.getDateInscription());
+        response.setCreationDate(user.getCreatedAt());
+        response.setLastLogin(user.getLastLogin());
+
+        user.setLastLogin(LocalDateTime.now());
+        repository.save(user);
 
         return response;
     }
