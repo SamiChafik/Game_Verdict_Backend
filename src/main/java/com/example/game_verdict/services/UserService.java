@@ -64,7 +64,7 @@ public class UserService {
         user.setBio(dto.getBio());
         user.setAvatar(dto.getAvatar());
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
-        user.setPassword(dto.getPassword());
+//        user.setPassword(dto.getPassword());
         User savedUser = repository.save(user);
         return mapper.toDTO(savedUser);
     }
@@ -79,12 +79,12 @@ public class UserService {
         return mapper.toDTO(savedUser);
     }
 
-    public UserDTO updateUserStatus(Long id, UserDTO dto){
+    public UserDTO updateUserStatus(Long id, Boolean isBanned){
         User user = repository.findById(id).orElse(null);
         if (user == null){
             throw new RuntimeException("user not found");
         }
-        user.setBanned(dto.isBanned());
+        user.setBanned(isBanned);
         User savedUser = repository.save(user);
         return mapper.toDTO(savedUser);
     }
