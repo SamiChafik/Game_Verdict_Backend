@@ -79,6 +79,7 @@ public class AuthenticationService {
         response.setRole(user.getRole().name());
         response.setCreationDate(user.getCreatedAt());
         response.setLastLogin(user.getLastLogin());
+        response.setBanned(user.isBanned());
 
         user.setLastLogin(LocalDateTime.now());
         repository.save(user);
