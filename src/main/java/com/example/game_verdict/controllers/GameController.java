@@ -11,6 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/games")
+@CrossOrigin("*")
 public class GameController {
 
     private final GameService gameService;
@@ -54,5 +55,17 @@ public class GameController {
     public ResponseEntity<Void> deleteGame(@PathVariable Long id) {
         gameService.deleteGame(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{id}/platforms")
+    public ResponseEntity<List<String>> getGamePlatforms(@PathVariable Long id) {
+        List<String> platforms = gameService.getGamePlatforms(id);
+        return ResponseEntity.ok(platforms);
+    }
+
+    @GetMapping("/{id}/genres")
+    public ResponseEntity<List<String>> getGameGenres(@PathVariable Long id) {
+        List<String> genres = gameService.getGameGenres(id);
+        return ResponseEntity.ok(genres);
     }
 }
