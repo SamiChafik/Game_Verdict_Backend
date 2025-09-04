@@ -49,7 +49,7 @@ public class UserDTO {
     public String getPassword() {
         return password;
     }
-
+//
     public void setPassword(String password) {
         this.password = password;
     }
@@ -98,7 +98,7 @@ public class UserDTO {
         return isBanned;
     }
 
-    public void setBanned(boolean banned) {
-        isBanned = banned;
+    public void setBanned(boolean isBanned) {
+        this.isBanned = isBanned;
     }
 }
