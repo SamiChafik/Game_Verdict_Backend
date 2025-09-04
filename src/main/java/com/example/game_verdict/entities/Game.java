@@ -21,26 +21,37 @@ public class Game {
     private String title;
     private String description;
     private LocalDate releaseDate;
+    private String Link;
     private String coverImg;
     private Rating rating;
     private Float averageRating;
     private Long rawgId;
 
-    @ManyToMany
-    @JoinTable(
-            name = "game_platform",
-            joinColumns = @JoinColumn(name = "game_id"),
-            inverseJoinColumns = @JoinColumn(name = "platform_id")
-    )
-    private Set<Platform> platforms = new HashSet<>();
+    @ElementCollection
+    @CollectionTable(name = "game_platforms", joinColumns = @JoinColumn(name = "game_id"))
+    @Column(name = "platform")
+    private List<String> platforms = new ArrayList<>();
 
-    @ManyToMany
-    @JoinTable(
-            name = "game_genre",
-            joinColumns = @JoinColumn(name = "game_id"),
-            inverseJoinColumns = @JoinColumn(name = "genre_id")
-    )
-    private Set<Genre> genres = new HashSet<>();
+    @ElementCollection
+    @CollectionTable(name = "game_genres", joinColumns = @JoinColumn(name = "game_id"))
+    @Column(name = "genre")
+    private List<String> genres = new ArrayList<>();
+
+//    @ManyToMany
+//    @JoinTable(
+//            name = "game_platform",
+//            joinColumns = @JoinColumn(name = "game_id"),
+//            inverseJoinColumns = @JoinColumn(name = "platform_id")
+//    )
+//    private Set<Platform> platforms = new HashSet<>();
+//
+//    @ManyToMany
+//    @JoinTable(
+//            name = "game_genre",
+//            joinColumns = @JoinColumn(name = "game_id"),
+//            inverseJoinColumns = @JoinColumn(name = "genre_id")
+//    )
+//    private Set<Genre> genres = new HashSet<>();
 
 
     @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -78,6 +89,14 @@ public class Game {
         this.releaseDate = releaseDate;
     }
 
+    public String getLink() {
+        return Link;
+    }
+
+    public void setLink(String link) {
+        Link = link;
+    }
+
     public String getCoverImg() {
         return coverImg;
     }
@@ -110,19 +129,19 @@ public class Game {
         this.rawgId = rawgId;
     }
 
-    public Set<Platform> getPlatforms() {
+    public List<String> getPlatforms() {
         return platforms;
     }
 
-    public void setPlatforms(Set<Platform> platforms) {
+    public void setPlatforms(List<String> platforms) {
         this.platforms = platforms;
     }
 
-    public Set<Genre> getGenres() {
+    public List<String> getGenres() {
         return genres;
     }
 
-    public void setGenres(Set<Genre> genres) {
+    public void setGenres(List<String> genres) {
         this.genres = genres;
     }
 
