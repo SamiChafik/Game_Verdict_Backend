@@ -17,6 +17,7 @@ public class AuthenticationResponse {
     private String name;
     private String email;
     private String role;
+    private boolean banned;
     private LocalDateTime creationDate;
     private LocalDateTime lastLogin;
 
@@ -74,5 +75,13 @@ public class AuthenticationResponse {
 
     public void setLastLogin(LocalDateTime lastLogin) {
         this.lastLogin = lastLogin;
+    }
+
+    public boolean isBanned() {
+        return banned;
+    }
+
+    public void setBanned(boolean banned) {
+        this.banned = banned;
     }
 }
