@@ -17,12 +17,13 @@ public class GameDTO {
     private String title;
     private String description;
     private LocalDate releaseDate;
+    private String Link;
     private String coverImg;
     private Rating rating;
     private Float averageRating;
     private Long rawgId;
-    private List<PlatformDTO> platforms;
-    private List<GenreDTO> genres;
+    private List<String> platforms;
+    private List<String> genres;
     private int reviewCount;
 
     public Long getId() {
@@ -57,6 +58,14 @@ public class GameDTO {
         this.releaseDate = releaseDate;
     }
 
+    public String getLink() {
+        return Link;
+    }
+
+    public void setLink(String link) {
+        Link = link;
+    }
+
     public String getCoverImg() {
         return coverImg;
     }
@@ -89,19 +98,20 @@ public class GameDTO {
         this.rawgId = rawgId;
     }
 
-    public List<PlatformDTO> getPlatforms() {
+
+    public List<String> getPlatforms() {
         return platforms;
     }
 
-    public void setPlatforms(List<PlatformDTO> platforms) {
+    public void setPlatforms(List<String> platforms) {
         this.platforms = platforms;
     }
 
-    public List<GenreDTO> getGenres() {
+    public List<String> getGenres() {
         return genres;
     }
 
-    public void setGenres(List<GenreDTO> genres) {
+    public void setGenres(List<String> genres) {
         this.genres = genres;
     }
 
