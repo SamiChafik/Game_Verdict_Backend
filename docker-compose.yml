@@ -1,0 +1,43 @@
+services:
+  app:
+    restart: on-failure
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: game-verdict
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/gameverdictdb
+      SPRING_DATASOURCE_USERNAME:
+      SPRING_DATASOURCE_PASSWORD:
+    networks:
+      - app
+    depends_on:
+      - db
+    mem_limit: 512M
+    mem_reservation: 256M
+
+  db:
+    image: mysql:8.0
+    container_name: db
+    environment:
+      MYSQL_ROOT_PASSWORD:
+      MYSQL_DATABASE: gameverdictdb
+    ports:
+      - "3307:3306"
+    networks:
+      - app
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: unless-stopped
+    mem_limit: 512M
+    mem_reservation: 256M
+
+networks:
+  app:
+    driver: bridge
+
+volumes:
+  db_data:
