@@ -7,7 +7,10 @@ import com.example.game_verdict.mappers.ReviewMapper;
 import com.example.game_verdict.repositories.GameRepository;
 import com.example.game_verdict.repositories.ReviewRepository;
 import com.example.game_verdict.repositories.ReviewerRepository;
+import com.example.game_verdict.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,16 +23,19 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final GameRepository gameRepository;
     private final ReviewerRepository reviewerRepository;
+    private final UserRepository userRepository;
     private final ReviewMapper reviewMapper;
 
     @Autowired
     public ReviewService(ReviewRepository reviewRepository,
                          GameRepository gameRepository,
                          ReviewerRepository reviewerRepository,
+                         UserRepository userRepository,
                          ReviewMapper reviewMapper) {
         this.reviewRepository = reviewRepository;
         this.gameRepository = gameRepository;
         this.reviewerRepository = reviewerRepository;
+        this.userRepository = userRepository;
         this.reviewMapper = reviewMapper;
     }
 
@@ -66,6 +72,7 @@ public class ReviewService {
         review.setCreatedAt(LocalDate.now());
 
         Review savedReview = reviewRepository.save(review);
+        updateAverageRating(game.getId());
         return reviewMapper.toDTO(savedReview);
     }
 
@@ -78,15 +85,48 @@ public class ReviewService {
         existingReview.setRating(reviewDTO.getRating());
 
         Review updatedReview = reviewRepository.save(existingReview);
+        updateAverageRating(existingReview.getGame().getId());
         return reviewMapper.toDTO(updatedReview);
     }
 
     @Transactional
     public void deleteReview(Long id) {
-        if (!reviewRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Review not found with id: " + id);
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String userEmail = userDetails.getUsername();
+        User currentUser = userRepository.findByEmail(userEmail).orElseThrow(() -> new RuntimeException("User not found"));
+
+        Review review = reviewRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Review not found with id: " + id));
+
+        boolean isOwner = review.getReviewer().getId().equals(currentUser.getId());
+        boolean isAdmin = currentUser.getRole() == Role.ADMIN;
+        boolean isModerator = currentUser.getRole() == Role.MODERATOR;
+
+        if (isOwner || isAdmin || isModerator) {
+            reviewRepository.deleteById(id);
+            updateAverageRating(review.getGame().getId());
+        } else {
+            throw new RuntimeException("You are not authorized to delete this review.");
         }
-        reviewRepository.deleteById(id);
+    }
+
+    public void updateAverageRating(Long gameId) {
+        Game game = gameRepository.findById(gameId)
+                .orElseThrow(() -> new ResourceNotFoundException("Game not found with id: " + gameId));
+
+        List<Review> reviews = reviewRepository.findByGameId(gameId);
+
+        if (reviews.isEmpty()) {
+            game.setAverageRating(0.0f);
+        } else {
+            double sum = 0;
+            for (Review review : reviews) {
+                sum += review.getRating().getValue();
+            }
+            game.setAverageRating((float) (sum / reviews.size()));
+        }
+
+        gameRepository.save(game);
     }
 
     @Transactional(readOnly = true)
