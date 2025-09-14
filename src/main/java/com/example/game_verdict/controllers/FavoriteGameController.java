@@ -1,16 +1,17 @@
 package com.example.game_verdict.controllers;
 
-import com.example.game_verdict.dtos.FavoriteGameDTO;
+import com.example.game_verdict.dtos.GameDTO;
 import com.example.game_verdict.services.FavoriteGameService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
 @RequestMapping("/favorites")
+@CrossOrigin("*")
 public class FavoriteGameController {
 
     private final FavoriteGameService favoriteGameService;
@@ -20,41 +21,29 @@ public class FavoriteGameController {
         this.favoriteGameService = favoriteGameService;
     }
 
-    @GetMapping
-    public ResponseEntity<List<FavoriteGameDTO>> getAllFavorites() {
-        List<FavoriteGameDTO> favorites = favoriteGameService.getAllFavorites();
+    @GetMapping("/user")
+    public ResponseEntity<List<GameDTO>> getFavoritesByUser(Principal principal) {
+        List<GameDTO> favorites = favoriteGameService.getFavoritesByPrincipal(principal);
         return ResponseEntity.ok(favorites);
     }
 
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<FavoriteGameDTO>> getFavoritesByUser(@PathVariable Long userId) {
-        List<FavoriteGameDTO> favorites = favoriteGameService.getFavoritesByUserId(userId);
-        return ResponseEntity.ok(favorites);
+    @PostMapping("/{gameId}")
+    public ResponseEntity<Void> createFavorite(@PathVariable Long gameId, Principal principal) {
+        favoriteGameService.createFavorite(gameId, principal);
+        return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<FavoriteGameDTO> getFavoriteById(@PathVariable Long id) {
-        FavoriteGameDTO favorite = favoriteGameService.getFavoriteById(id);
-        return ResponseEntity.ok(favorite);
-    }
-
-    @PostMapping
-    public ResponseEntity<FavoriteGameDTO> createFavorite(@RequestBody FavoriteGameDTO favoriteGameDTO) {
-        FavoriteGameDTO createdFavorite = favoriteGameService.createFavorite(favoriteGameDTO);
-        return new ResponseEntity<>(createdFavorite, HttpStatus.CREATED);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteFavorite(@PathVariable Long id) {
-        favoriteGameService.deleteFavorite(id);
-        return ResponseEntity.noContent().build();
-    }
-
-    @DeleteMapping("/user/{userId}/game/{gameId}")
+    @DeleteMapping("/game/{gameId}")
     public ResponseEntity<Void> deleteFavoriteByUserAndGame(
-            @PathVariable Long userId,
-            @PathVariable Long gameId) {
-        favoriteGameService.deleteFavoriteByUserAndGame(userId, gameId);
+            @PathVariable("gameId") Long gameId, Principal principal) {
+        favoriteGameService.deleteFavoriteByPrincipalAndGame(principal, gameId);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/game/{gameId}")
+    public ResponseEntity<Boolean> isGameFavoritedByUser(
+            @PathVariable("gameId") Long gameId, Principal principal) {
+        boolean isFavorited = favoriteGameService.isGameFavoritedByPrincipal(principal, gameId);
+        return ResponseEntity.ok(isFavorited);
     }
 }

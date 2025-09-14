@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -32,7 +33,7 @@ public class UserController {
         return service.getUsersList();
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'DRIVER', 'SENDER')")
+//    @PreAuthorize("hasAnyRole('ADMIN', 'DRIVER', 'SENDER')")
     @PutMapping("/updateUser/{id}")
     public UserDTO updateUser(@RequestBody UserDTO dto, @PathVariable Long id){
         return service.updateUser(id,dto);
@@ -52,8 +53,13 @@ public class UserController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/deleteUser/{id}")
-    public void deleteUser(@PathVariable Long id){
+    public void deleteUser(@PathVariable Long id) {
         service.deleteUser(id);
+    }
+
+    @DeleteMapping("/me")
+    public void deleteCurrentUser(Principal principal){
+        service.deleteCurrentUser(principal);
     }
 
 }
