@@ -14,8 +14,8 @@ public class CommentDTO {
     private String content;
     private LocalDate createdAt;
     private Long reviewId;
-    private Long memberId;
-    private String memberUsername;
+    private Long userId;
+    private String username;
 
     public Long getId() {
         return id;
@@ -49,19 +49,19 @@ public class CommentDTO {
         this.reviewId = reviewId;
     }
 
-    public Long getMemberId() {
-        return memberId;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setMemberId(Long memberId) {
-        this.memberId = memberId;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
-    public String getMemberUsername() {
-        return memberUsername;
+    public String getUsername() {
+        return username;
     }
 
-    public void setMemberUsername(String memberUsername) {
-        this.memberUsername = memberUsername;
+    public void setUsername(String username) {
+        this.username = username;
     }
 }

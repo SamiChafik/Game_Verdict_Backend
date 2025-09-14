@@ -17,7 +17,7 @@ public class GameDTO {
     private String title;
     private String description;
     private LocalDate releaseDate;
-    private String Link;
+    private String link;
     private String coverImg;
     private Rating rating;
     private Float averageRating;
@@ -59,11 +59,11 @@ public class GameDTO {
     }
 
     public String getLink() {
-        return Link;
+        return link;
     }
 
     public void setLink(String link) {
-        Link = link;
+        this.link = link;
     }
 
     public String getCoverImg() {

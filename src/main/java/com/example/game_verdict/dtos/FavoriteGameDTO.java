@@ -1,18 +1,17 @@
 package com.example.game_verdict.dtos;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
 public class FavoriteGameDTO {
     private Long id;
     private Long userId;
     private Long gameId;
-    private String gameTitle;
-    private String gameCoverImg;
+
+    public FavoriteGameDTO() {}
+
+    public FavoriteGameDTO(Long id, Long userId, Long gameId) {
+        this.id = id;
+        this.userId = userId;
+        this.gameId = gameId;
+    }
 
     public Long getId() {
         return id;
@@ -36,21 +35,5 @@ public class FavoriteGameDTO {
 
     public void setGameId(Long gameId) {
         this.gameId = gameId;
-    }
-
-    public String getGameTitle() {
-        return gameTitle;
-    }
-
-    public void setGameTitle(String gameTitle) {
-        this.gameTitle = gameTitle;
-    }
-
-    public String getGameCoverImg() {
-        return gameCoverImg;
-    }
-
-    public void setGameCoverImg(String gameCoverImg) {
-        this.gameCoverImg = gameCoverImg;
     }
 }
