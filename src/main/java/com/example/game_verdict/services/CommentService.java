@@ -1,13 +1,17 @@
 package com.example.game_verdict.services;
 
 import com.example.game_verdict.dtos.CommentDTO;
-import com.example.game_verdict.entities.*;
+import com.example.game_verdict.entities.Comment;
+import com.example.game_verdict.entities.Review;
+import com.example.game_verdict.entities.Role;
+import com.example.game_verdict.entities.User;
 import com.example.game_verdict.exceptions.ResourceNotFoundException;
 import com.example.game_verdict.mappers.CommentMapper;
 import com.example.game_verdict.repositories.CommentRepository;
-import com.example.game_verdict.repositories.MemberRepository;
 import com.example.game_verdict.repositories.ReviewRepository;
+import com.example.game_verdict.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,17 +23,17 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
     private final ReviewRepository reviewRepository;
-    private final MemberRepository memberRepository;
+    private final UserRepository userRepository;
     private final CommentMapper commentMapper;
 
     @Autowired
     public CommentService(CommentRepository commentRepository,
                           ReviewRepository reviewRepository,
-                          MemberRepository memberRepository,
+                          UserRepository userRepository,
                           CommentMapper commentMapper) {
         this.commentRepository = commentRepository;
         this.reviewRepository = reviewRepository;
-        this.memberRepository = memberRepository;
+        this.userRepository = userRepository;
         this.commentMapper = commentMapper;
     }
 
@@ -41,7 +45,7 @@ public class CommentService {
 
     @Transactional(readOnly = true)
     public List<CommentDTO> getCommentsByReviewId(Long reviewId) {
-        List<Comment> comments = commentRepository.findByReviewId(reviewId);
+        List<Comment> comments = commentRepository.findByReviewIdWithUser(reviewId);
         return commentMapper.toDTOs(comments);
     }
 
@@ -57,12 +61,12 @@ public class CommentService {
         Review review = reviewRepository.findById(commentDTO.getReviewId())
                 .orElseThrow(() -> new ResourceNotFoundException("Review not found with id: " + commentDTO.getReviewId()));
 
-        Member member = memberRepository.findById(commentDTO.getMemberId())
-                .orElseThrow(() -> new ResourceNotFoundException("Member not found with id: " + commentDTO.getMemberId()));
+        User user = userRepository.findById(commentDTO.getUserId())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + commentDTO.getUserId()));
 
         Comment comment = commentMapper.toEntity(commentDTO);
         comment.setReview(review);
-        comment.setMember(member);
+        comment.setUser(user);
         comment.setCreatedAt(LocalDate.now());
 
         Comment savedComment = commentRepository.save(comment);
@@ -81,9 +85,19 @@ public class CommentService {
 
     @Transactional
     public void deleteComment(Long id) {
-        if (!commentRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Comment not found with id: " + id);
+        Comment comment = commentRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Comment not found with id: " + id));
+
+        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        boolean isOwner = comment.getUser().getId().equals(currentUser.getId());
+        boolean isAdmin = currentUser.getRole().equals(Role.ADMIN);
+        boolean isModerator = currentUser.getRole().equals(Role.MODERATOR);
+
+        if (!isOwner && !isAdmin && !isModerator) {
+            throw new RuntimeException("You are not authorized to delete this comment");
         }
+
         commentRepository.deleteById(id);
     }
 }
