@@ -12,12 +12,12 @@ import java.util.List;
 public interface CommentMapper {
 
     @Mapping(target = "review", ignore = true)
-    @Mapping(target = "member", ignore = true)
+    @Mapping(target = "user", ignore = true)
     Comment toEntity(CommentDTO dto);
 
     @Mapping(target = "reviewId", source = "review.id")
-    @Mapping(target = "memberId", source = "member.id")
-    @Mapping(target = "memberUsername", source = "member.username")
+    @Mapping(target = "userId", source = "user.id")
+    @Mapping(target = "username", source = "user.name")
     CommentDTO toDTO(Comment comment);
 
     List<CommentDTO> toDTOs(List<Comment> comments);

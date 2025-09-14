@@ -18,7 +18,7 @@ public interface ReviewMapper {
     @Mapping(target = "gameId", source = "game.id")
     @Mapping(target = "gameTitle", source = "game.title")
     @Mapping(target = "reviewerId", source = "reviewer.id")
-    @Mapping(target = "reviewerUsername", source = "reviewer.username")
+    @Mapping(target = "reviewerUsername", source = "reviewer.name")
     @Mapping(target = "commentCount", expression = "java(review.getComments().size())")
     ReviewDTO toDTO(Review review);
     List<ReviewDTO> toDTOs(List<Review> reviews);
