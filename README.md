@@ -77,7 +77,7 @@ GameVerdict est une application web full-stack qui permet aux joueurs de parcour
 ## Installation Frontend
 bash
 
-git clone https://github.com/votre-username/gameverdict.git
+git clone https://github.com/SamiChafik/Game_Verdict_Backend
 
 ### Accéder au dossier frontend
 cd gameverdict/frontend
