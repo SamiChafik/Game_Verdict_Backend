@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -22,6 +23,8 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
+
+    @Column(unique = true)
     private String email;
     private String password;
     private String avatar;
@@ -32,6 +35,12 @@ public class User implements UserDetails {
     private LocalDateTime lastLogin;
     private Role role;
     private boolean isBanned;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<FavoriteGame> favoriteGames = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comments = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -142,5 +151,21 @@ public class User implements UserDetails {
 
     public void setBanned(boolean banned) {
         isBanned = banned;
+    }
+
+    public List<FavoriteGame> getFavoriteGames() {
+        return favoriteGames;
+    }
+
+    public void setFavoriteGames(List<FavoriteGame> favoriteGames) {
+        this.favoriteGames = favoriteGames;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
     }
 }

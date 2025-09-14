@@ -21,7 +21,7 @@ public class Game {
     private String title;
     private String description;
     private LocalDate releaseDate;
-    private String Link;
+    private String link;
     private String coverImg;
     private Rating rating;
     private Float averageRating;
@@ -57,6 +57,9 @@ public class Game {
     @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> reviews = new ArrayList<>();
 
+    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<FavoriteGame> favoriteGames = new ArrayList<>();
+
     public Long getId() {
         return id;
     }
@@ -90,11 +93,11 @@ public class Game {
     }
 
     public String getLink() {
-        return Link;
+        return link;
     }
 
     public void setLink(String link) {
-        Link = link;
+        this.link = link;
     }
 
     public String getCoverImg() {
@@ -151,5 +154,13 @@ public class Game {
 
     public void setReviews(List<Review> reviews) {
         this.reviews = reviews;
+    }
+
+    public List<FavoriteGame> getFavoriteGames() {
+        return favoriteGames;
+    }
+
+    public void setFavoriteGames(List<FavoriteGame> favoriteGames) {
+        this.favoriteGames = favoriteGames;
     }
 }
