@@ -1,91 +1,76 @@
 package com.example.game_verdict.services;
 
-import com.example.game_verdict.dtos.FavoriteGameDTO;
+import com.example.game_verdict.dtos.GameDTO;
 import com.example.game_verdict.entities.FavoriteGame;
 import com.example.game_verdict.entities.Game;
-import com.example.game_verdict.entities.Member;
-import com.example.game_verdict.exceptions.ResourceNotFoundException;
-import com.example.game_verdict.mappers.FavoriteGameMapper;
+import com.example.game_verdict.entities.User;
+import com.example.game_verdict.mappers.GameMapper;
 import com.example.game_verdict.repositories.FavoriteGameRepository;
 import com.example.game_verdict.repositories.GameRepository;
-import com.example.game_verdict.repositories.MemberRepository;
+import com.example.game_verdict.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
+import java.security.Principal;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class FavoriteGameService {
 
     private final FavoriteGameRepository favoriteGameRepository;
+    private final UserRepository userRepository;
     private final GameRepository gameRepository;
-    private final MemberRepository memberRepository;
-    private final FavoriteGameMapper favoriteGameMapper;
+    private final GameMapper gameMapper;
 
     @Autowired
     public FavoriteGameService(FavoriteGameRepository favoriteGameRepository,
+                               UserRepository userRepository,
                                GameRepository gameRepository,
-                               MemberRepository memberRepository,
-                               FavoriteGameMapper favoriteGameMapper) {
+                               GameMapper gameMapper) {
         this.favoriteGameRepository = favoriteGameRepository;
+        this.userRepository = userRepository;
         this.gameRepository = gameRepository;
-        this.memberRepository = memberRepository;
-        this.favoriteGameMapper = favoriteGameMapper;
+        this.gameMapper = gameMapper;
     }
 
-    @Transactional(readOnly = true)
-    public List<FavoriteGameDTO> getAllFavorites() {
-        List<FavoriteGame> favorites = favoriteGameRepository.findAll();
-        return favoriteGameMapper.toDTOs(favorites);
+    public List<GameDTO> getFavoritesByPrincipal(Principal principal) {
+        User user = userRepository.findByEmail(principal.getName()).orElseThrow();
+        List<FavoriteGame> favoriteGames = favoriteGameRepository.findByUser(user);
+        List<Game> games = favoriteGames.stream().map(FavoriteGame::getGame).collect(Collectors.toList());
+        return gameMapper.toDTOs(games);
     }
 
-    @Transactional(readOnly = true)
-    public List<FavoriteGameDTO> getFavoritesByUserId(Long userId) {
-        List<FavoriteGame> favorites = favoriteGameRepository.findByUserId(userId);
-        return favoriteGameMapper.toDTOs(favorites);
-    }
+    public void createFavorite(Long gameId, Principal principal) {
+        User user = userRepository.findByEmail(principal.getName()).orElseThrow();
+        Optional<Game> game = gameRepository.findById(gameId);
 
-    @Transactional(readOnly = true)
-    public FavoriteGameDTO getFavoriteById(Long id) {
-        FavoriteGame favorite = favoriteGameRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Favorite not found with id: " + id));
-        return favoriteGameMapper.toDTO(favorite);
-    }
+        if (game.isPresent()) {
+            Optional<FavoriteGame> existingFavorite = favoriteGameRepository
+                    .findByUserAndGame(user, game.get());
 
-    @Transactional
-    public FavoriteGameDTO createFavorite(FavoriteGameDTO favoriteGameDTO) {
-        Game game = gameRepository.findById(favoriteGameDTO.getGameId())
-                .orElseThrow(() -> new ResourceNotFoundException("Game not found with id: " + favoriteGameDTO.getGameId()));
-
-        Member member = memberRepository.findById(favoriteGameDTO.getUserId())
-                .orElseThrow(() -> new ResourceNotFoundException("Member not found with id: " + favoriteGameDTO.getUserId()));
-
-        if (favoriteGameRepository.existsByUserIdAndGameId(favoriteGameDTO.getUserId(), favoriteGameDTO.getGameId())) {
-            throw new IllegalArgumentException("Game is already in favorites");
+            if (existingFavorite.isEmpty()) {
+                FavoriteGame favoriteGame = new FavoriteGame();
+                favoriteGame.setUser(user);
+                favoriteGame.setGame(game.get());
+                favoriteGameRepository.save(favoriteGame);
+            }
         }
-
-        FavoriteGame favorite = new FavoriteGame();
-        favorite.setUserId(favoriteGameDTO.getUserId());
-        favorite.setGame(game);
-        favorite.setMember(member);
-
-        FavoriteGame savedFavorite = favoriteGameRepository.save(favorite);
-        return favoriteGameMapper.toDTO(savedFavorite);
     }
 
-    @Transactional
-    public void deleteFavorite(Long id) {
-        if (!favoriteGameRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Favorite not found with id: " + id);
+    public void deleteFavoriteByPrincipalAndGame(Principal principal, Long gameId) {
+        User user = userRepository.findByEmail(principal.getName()).orElseThrow();
+        Optional<Game> game = gameRepository.findById(gameId);
+        if (game.isPresent()) {
+            favoriteGameRepository.findByUserAndGame(user, game.get())
+                    .ifPresent(favoriteGameRepository::delete);
         }
-        favoriteGameRepository.deleteById(id);
     }
 
-    @Transactional
-    public void deleteFavoriteByUserAndGame(Long userId, Long gameId) {
-        FavoriteGame favorite = favoriteGameRepository.findByUserIdAndGameId(userId, gameId)
-                .orElseThrow(() -> new ResourceNotFoundException("Favorite not found for user and game"));
-        favoriteGameRepository.delete(favorite);
+    public boolean isGameFavoritedByPrincipal(Principal principal, Long gameId) {
+        User user = userRepository.findByEmail(principal.getName()).orElseThrow();
+        Optional<Game> game = gameRepository.findById(gameId);
+        return game.isPresent() && favoriteGameRepository.findByUserAndGame(user, game.get()).isPresent();
     }
 }
