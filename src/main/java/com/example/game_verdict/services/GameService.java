@@ -2,9 +2,11 @@ package com.example.game_verdict.services;
 
 import com.example.game_verdict.dtos.GameDTO;
 import com.example.game_verdict.entities.Game;
+import com.example.game_verdict.entities.Review;
 import com.example.game_verdict.exceptions.ResourceNotFoundException;
 import com.example.game_verdict.mappers.GameMapper;
 import com.example.game_verdict.repositories.GameRepository;
+import com.example.game_verdict.repositories.ReviewRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,16 +16,30 @@ import java.util.List;
 public class GameService {
 
     private final GameRepository gameRepository;
+    private final ReviewRepository reviewRepository;
     private final GameMapper gameMapper;
 
-    public GameService(GameRepository gameRepository, GameMapper gameMapper) {
+    public GameService(GameRepository gameRepository, ReviewRepository reviewRepository, GameMapper gameMapper) {
         this.gameRepository = gameRepository;
+        this.reviewRepository = reviewRepository;
         this.gameMapper = gameMapper;
     }
 
     @Transactional(readOnly = true)
     public List<GameDTO> getAllGames() {
         List<Game> games = gameRepository.findAll();
+        games.forEach(game -> {
+            List<Review> reviews = reviewRepository.findByGameId(game.getId());
+            if (reviews.isEmpty()) {
+                game.setAverageRating(0.0f);
+            } else {
+                double sum = 0;
+                for (Review review : reviews) {
+                    sum += review.getRating().getValue();
+                }
+                game.setAverageRating((float) (sum / reviews.size()));
+            }
+        });
         return gameMapper.toDTOs(games);
     }
 
@@ -97,5 +113,11 @@ public class GameService {
         Game game = gameRepository.findById(gameId)
                 .orElseThrow(() -> new ResourceNotFoundException("Game not found with id: " + gameId));
         return game.getGenres();
+    }
+
+    @Transactional(readOnly = true)
+    public List<GameDTO> getRecentGames(int limit) {
+        List<Game> games = gameRepository.findTop3ByOrderByReleaseDateDesc();
+        return gameMapper.toDTOs(games);
     }
 }
